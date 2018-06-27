@@ -28,7 +28,7 @@ This is extension for Yii2 framework.
         'items' => [
                         [
                             'id' => 1,
-                            'label' => 'Apple Inc.',
+                            'label' => '<i class="fa fa-star"></i> Apple Inc.',
                             'items' => [
                                            [
                                                'id' => 2,

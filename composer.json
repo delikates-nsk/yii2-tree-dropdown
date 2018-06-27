@@ -4,7 +4,7 @@
     "keywords": ["yii2", "extension", "widget", "dropdown", "tree", "checkbox"],
     "homepage": "https://github.com/delikates-nsk/yii2-tree-dropdown",
     "type": "yii2-extension",
-    "license": "BSD 3-Clause",
+    "license": "BSD-3-Clause",
     "authors": [
         {
             "name": "Constantin G. Nekhoroshkov",
