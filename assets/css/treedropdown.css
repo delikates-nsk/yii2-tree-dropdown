@@ -250,6 +250,6 @@
 .dropdown-tree-container .tree ul li .node i.fa-check-square-o {
     color: #2c8f7b !important;
 }
-.dropdown-tree-container .tree ul li .node > span:hover{
+.dropdown-tree-container .tree ul li .node > span:hover, .dropdown-tree-container .tree ul li .node > span.selected{
     background-color: #e8e8e8;
 }

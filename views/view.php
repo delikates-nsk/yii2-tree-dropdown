@@ -130,6 +130,7 @@ $(document).ready(function() {
         } else {
             $('" . $id . " .tree-input > span').html('&nbsp;');
         }
+        $('" . $id . " .tree ul li .node:not(.root) > span.selected').removeClass('selected');
         $('" . $id . " > .form-group input[type=hidden]:eq(0)').val('');
         $('" . $id . " .tree-input .icon .input-clear').addClass('hide');
     });
@@ -148,6 +149,7 @@ if ( $widget->multiSelect ) {
     $js .= "else if ( $(this).hasClass('fa-check-square-o') ) {
             $(this).removeClass('fa-check-square-o').addClass('fa-square-o');
             $('" . $id . " .tree-input ul li[data-id='+( $(this).next('span').attr('data-id') )+']').remove();
+            $(this).next('span').removeClass('selected');
             if ( $('" . $id . " .tree-input ul li').length == 0 ) {
                 $('" . $id . " .tree-input ul').append('<li class=\"empty\">&nbsp;</li>');
                 $('" . $id . " .tree-input .icon .input-clear').addClass('hide');
@@ -161,6 +163,7 @@ if ( $widget->multiSelect ) {
             $(this).removeClass('fa-square-o').addClass('fa-check-square-o');
             $('" . $id . " .tree-input ul li.empty').remove();
             $('" . $id . " .tree-input ul').append('<li data-id='+( \$(this).next('span').attr('data-id') )+'>'+$(this).next('span').html()+'</li>');
+            $(this).next('span').addClass('selected');
             if ( $('" . $id . " > .form-group input[type=hidden]').length != 0 ) {
                 if ( $('" . $id . " > .form-group input[type=hidden]:eq(0)').val() != '' ) {
                 
@@ -179,6 +182,7 @@ if ( $widget->multiSelect ) {
     $('" . $id . " .tree ul li .node:not(.root) > span').on('click', function(){
         $('" . $id . " > .form-group input[type=hidden]:eq(0)').val( $(this).attr('data-id') );
         $('" . $id . " .tree-input > span').html( $(this).html() );
+        $(this).addClass('selected');
         $('" . $id . " .tree-input .icon .input-clear').removeClass('hide');
         $('" . $id . " .tree-input').click();
         
