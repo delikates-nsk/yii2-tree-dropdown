@@ -222,6 +222,9 @@ if ( $widget->form !== null && ( $widget->form instanceof \yii\widgets\ActiveFor
                 }
             }
         }
+        if ( !$widget->expand ) {
+            $js .= "if ( $('" . $id . " .tree-dropdown').hasClass('open') ) { $('" . $id . " .tree-input').click(); };";
+        }
     }
 }
 
