@@ -18,6 +18,8 @@ class DropdownTreeWidget extends \yii\base\Widget
                        ];
 
     public $expand = false; //expand dropdown tree after show
+ 
+   public $label = false; //label of dropdown
 
     public $items = null; //array of tree nodes with subnodes
 
