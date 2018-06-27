@@ -24,13 +24,32 @@ class DropdownTreeWidget extends \yii\base\Widget
     public $items = null; //array of tree nodes with subnodes
 
     private $html = '';
+    private $treeObject = null;
 
     private function isValidNode( $item ) {
-        return ( is_array( $item ) && isset( $item['id'] ) && isset( $item['label'] ) );
+        return ( is_object( $item ) && isset( $item->id ) && isset( $item->label ) );
     }
 
     private function hasChildrens( $item ) {
-        return ( isset( $item['items'] ) && is_array(  $item['items'] ) && count( $item['items'] ) > 0 );
+        return ( isset( $item->items ) && is_array( $item->items ) && count( $item->items ) > 0 );
+    }
+
+    private function buildTreeObject( $items, &$parentItem = null ) {
+        if ( is_array( $items ) && count( $items ) > 0 ) {
+            foreach ($items as $item) {
+                if ( is_array( $item ) && isset( $item['id'] ) && isset( $item['label'] ) ) {
+                    $node = new \stdClass();
+                    $node->parent = $parentItem;
+                    $node->id = $item['id'];
+                    $node->label = $item['label'];
+                    if ( isset( $item['items'] ) && is_array( $item['items'] ) && count( $item['items'] ) > 0 ) {
+                        $node->items = [];
+                        $this->buildTreeObject( $item['items'], $node );
+                    }
+                    $parentItem->items[] = $node;
+                }
+            }
+        }
     }
 
     public function buildTreeView( $items ) {
@@ -38,7 +57,8 @@ class DropdownTreeWidget extends \yii\base\Widget
             foreach( $items as $index => $item ) {
                 if ( $this->isValidNode( $item ) ) {
                     if ( $index == 0 ) {
-                        $class = ""; 
+                        //Если parent у item последний Node у своего parent добавляем класс last-node
+                        $class =  ( isset( $item->parent ) && $item->parent !== null && isset( $item->parent->parent ) && $item->parent->parent !== null && $item->parent->parent->items[ count( $item->parent->parent->items ) - 1] == $item->parent ?  " class=\"last-node\"" : "" );
                         $this->html .= "<ul".$class.">\n";
                     }
 
@@ -46,10 +66,10 @@ class DropdownTreeWidget extends \yii\base\Widget
                     $this->html .= "    <div class=\"node\">\n";
                     $this->html .= "        ".( $this->hasChildrens( $item ) ? "<i class=\"fa fa-plus-square-o\"></i>\n" : "" );
                     $this->html .= "        ".( $this->multiSelect ? "<i class=\"fa fa-square-o\"></i>" : "" );
-                    $this->html .= "        <span".( ( isset( $item['id'] ) ? " data-id='".$item['id']."'" : "" ) ).">".( isset( $item['label'] ) ? $item['label'] : "&nbsp;" )."</span>\n";
+                    $this->html .= "        <span".( ( isset( $item->id ) ? " data-id='".$item->id."'" : "" ) ).">".( isset( $item->label ) ? $item->label : "&nbsp;" )."</span>\n";
                     $this->html .= "    </div>\n";
                     if ( $this->hasChildrens( $item ) ) {
-                        $this->buildTreeView( $item['items'] );
+                        $this->buildTreeView( $item->items );
                     }
                     $this->html .= "</li>\n";
 
@@ -77,7 +97,12 @@ class DropdownTreeWidget extends \yii\base\Widget
 
             $this->multiSelect = $multiSelect;
         }
-        $this->buildTreeView( $this->items );
+        $this->treeObject = new \stdClass();
+        $this->treeObject->id = -1;
+        $this->treeObject->label = 'Root';
+        $this->treeObject->items = [];
+        $this->buildTreeObject($this->items, $this->treeObject );
+        $this->buildTreeView( $this->treeObject->items );
     }
 
     public function run()
