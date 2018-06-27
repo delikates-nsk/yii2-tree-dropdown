@@ -1,6 +1,5 @@
 <?php
-
-namespace delikates-nsk\treedropdown;
+namespace delikatesnsk\treedropdown;
 
 class DropdownTreeWidget extends \yii\base\Widget
 {

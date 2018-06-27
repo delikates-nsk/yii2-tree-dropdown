@@ -7,7 +7,7 @@ This is extension for Yii2 framework.
 
 ```php
 <?php
-    echo \delikates-nsk\treedropdown\DropdownTreeWidget::widget([
+    echo \delikatesnsk\treedropdown\DropdownTreeWidget::widget([
         'id' => 'organizationsList', //<-- id of dropdown container
         'form' => $form, // <-- ActiveForm (for generate hidden input)
         'model' => $model, // <-- Model  (for generate hidden input)

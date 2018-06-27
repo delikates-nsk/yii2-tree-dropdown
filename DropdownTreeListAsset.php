@@ -1,5 +1,5 @@
 <?php
-namespace delikates-nsk\treedropdown;
+namespace delikatesnsk\treedropdown;
 
 use yii\web\AssetBundle;
 

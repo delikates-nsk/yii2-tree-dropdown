@@ -1,6 +1,6 @@
 <?php
 
-use delikates-nsk\treedropdown\DropdownTreeListAsset;
+use delikatesnsk\treedropdown\DropdownTreeListAsset;
 
 
 /**
