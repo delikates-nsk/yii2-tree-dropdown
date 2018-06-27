@@ -3,9 +3,8 @@
 Dropdown with tree.
 This is extension for Yii2 framework. 
 
-##Sreenshosts
-![Screenshot](dropdown-example-screen1.png)
-![Screenshot](dropdown-example-screen2.png)
+## Sreenshots
+![Screenshot](dropdown-example-screen1.png) ![Screenshot](dropdown-example-screen2.png)
 
 ## Usage
 
