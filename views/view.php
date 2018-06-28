@@ -5,7 +5,7 @@ use delikatesnsk\treedropdown\DropdownTreeListAsset;
 
 /**
  * @var $this \yii\web\View
- * @var $widget \insperedia\treedropdown\DropdownTreeWidget
+ * @var $widget \delikatesnsk\treedropdown\DropdownTreeWidget
  * @var $htmlData string
  */
 DropdownTreeListAsset::register($this);
