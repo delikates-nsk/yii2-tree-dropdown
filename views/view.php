@@ -49,13 +49,13 @@ $attribute = $widget->attribute;
             ?>
             <div class="tree">
                 <?php
-                    if ( isset( $widget->items ) && is_array( $widget->items ) && count( $widget->items ) > 0 ) {
+                    if ( isset( $widget->items ) && is_array( $widget->items ) ) {
                         if ( is_array( $widget->rootNode ) && isset( $widget->rootNode['visible'] ) && $widget->rootNode['visible'] ) {
                         ?>
                             <ul>
                                 <li class="parent">
                                     <div class="root node">
-                                        <i class="fa fa-minus-square-o"></i>
+                                        <i class="fa fa-<?= ( count( $widget->items ) > 0 ? 'minus' : 'plus' ); ?>-square-o"></i>
                                         <span><?= ( isset( $widget->rootNode['label'] ) ? $widget->rootNode['label'] : '' ); ?></span>
                                     </div>
                         <?php
@@ -135,16 +135,113 @@ $(document).ready(function() {
         $('" . $id . " .tree-input .icon .input-clear').addClass('hide');
     });
     
-    $('".$id." .tree ul li .node i').on('click', function(){
-        if ( $(this).hasClass('fa-minus-square-o') ) {
+    $('body').on('click', '".$id." .tree ul li .node i',function(){
+        if ( $(this).hasClass('fa-minus-square-o') ) {";
+//Collapse Node Event Ajax Request
+if ( $widget->ajax !== null && is_array( $widget->ajax ) && isset( $widget->ajax['onNodeCollapse'] ) && is_array( $widget->ajax['onNodeCollapse'] ) && isset( $widget->ajax['onNodeCollapse']['url'] ) && trim( $widget->ajax['onNodeCollapse']['url'] ) != '' ) {
+    if ( isset( $widget->ajax['onNodeCollapse']['params'] ) && is_array(  $widget->ajax['onNodeCollapse']['params'] ) && count(  $widget->ajax['onNodeCollapse']['params'] ) > 0 ) {
+        $ajaxData = '';
+        $nodeIdParamName = 'id';
+        foreach( $widget->ajax['onNodeCollapse']['params'] as $key => $value ) {
+            if ( $value !== '%nodeId' ) {
+                $ajaxData .= ( $ajaxData != '' ? '&' : '' ).$key.'='.$value;
+            } else {
+                $nodeIdParamName = $key;
+            }
+        }
+    }
+    $url = $widget->ajax['onNodeCollapse']['url'];
+    $method = mb_convert_case( ( isset( $widget->ajax['onNodeCollapse']['method'] ) &&  $widget->ajax['onNodeCollapse']['method'] != '' &&
+    ( mb_convert_case(  $widget->ajax['onNodeCollapse']['method'], MB_CASE_LOWER ) == 'get' || mb_convert_case(  $widget->ajax['onNodeCollapse']['method'], MB_CASE_LOWER ) == 'post' )
+        ? $widget->ajax['onNodeCollapse']['method']
+        : 'post'
+    ), MB_CASE_UPPER);
+    $js .= "
+            $.ajax({
+                type: '".$method."',
+                url: '".$url."',
+                data: '".( $ajaxData != "" ? $ajaxData."&" : "" ).$nodeIdParamName."='+( typeof( $(this).parent().children('span').attr('data-id') ) != 'undefined' ? $(this).parent().children('span').attr('data-id') : '' ),
+                async: true
+            });
+    ";
+
+}
+$js .= "
             $(this).parent().parent().children('ul').children('li').hide();
             $(this).removeClass('fa-minus-square-o').addClass('fa-plus-square-o');
-        } else if ( $(this).hasClass('fa-plus-square-o') ) {
+   }";
+
+$js .= "else if ( $(this).hasClass('fa-plus-square-o') ) {";
+//Expand Node Event Ajax Request
+if ( $widget->ajax !== null && is_array( $widget->ajax ) && isset( $widget->ajax['onNodeExpand'] ) && is_array( $widget->ajax['onNodeExpand'] ) && isset( $widget->ajax['onNodeExpand']['url'] ) && trim( $widget->ajax['onNodeExpand']['url'] ) != '' ) {
+    if ( isset( $widget->ajax['onNodeExpand']['params'] ) && is_array(  $widget->ajax['onNodeExpand']['params'] ) && count(  $widget->ajax['onNodeExpand']['params'] ) > 0 ) {
+        $ajaxData = '';
+        $nodeIdParamName = 'id';
+        foreach( $widget->ajax['onNodeExpand']['params'] as $key => $value ) {
+            if ( $value !== '%nodeId' ) {
+                $ajaxData .= ( $ajaxData != '' ? '&' : '' ).$key.'='.$value;
+            } else {
+                $nodeIdParamName = $key;
+            }
+        }
+    }
+    $url = $widget->ajax['onNodeExpand']['url'];
+    $method = mb_convert_case( ( isset( $widget->ajax['onNodeExpand']['method'] ) &&  $widget->ajax['onNodeExpand']['method'] != '' &&
+               ( mb_convert_case(  $widget->ajax['onNodeExpand']['method'], MB_CASE_LOWER ) == 'get' || mb_convert_case(  $widget->ajax['onNodeExpand']['method'], MB_CASE_LOWER ) == 'post' )
+                ? $widget->ajax['onNodeExpand']['method']
+                : 'post'
+              ), MB_CASE_UPPER);
+    $js .= "
+        var \$node = $(this);
+        if ( \$node.parent().parent().children('ul').length == 0 ) {
+            \$node.removeClass('fa-plus-square-o').addClass('fa-spinner');
+            $.ajax({
+                type: '".$method."',
+                url: '".$url."',
+                data: '".( $ajaxData != "" ? $ajaxData."&" : "" ).$nodeIdParamName."='+( typeof( $(this).parent().children('span').attr('data-id') ) != 'undefined' ? $(this).parent().children('span').attr('data-id') : '' ),
+                error: function(req, text, error) { \$node.remove(); },
+                success: function (data) {
+                    if ( !$.isArray( data ) && data.length > 0 ) {
+                        data = $.parseJSON( data );
+                    }
+                    if ( $.isArray( data ) && data.length > 0 ) {
+                        var \$str = '';
+                        for (var i = 0; i < data.length; i++ ) {
+                           if ( i == 0 ) {
+                              \$str = '<ul'+( \$node.parent().parent().parent().children('li').length > 0 && \$node.parent().parent().index() == \$node.parent().parent().parent().children('li').length - 1 ? ' class=\"last-node\"' : '' )+'>';
+                           }
+                           \$str += '    <li>'+
+                                       '       <div class=\"node\">'+
+                                       '           <i class=\"fa fa-'+( typeof( data[i].items ) != 'undefined' ? 'plus' : 'minus' )+'-square-o\"></i>'+
+                                       ". ( $widget->multiSelect ? "'           <i class=\"fa fa-square-o\"></i>'+" : "" )."
+                                       '           <span data-id=\"'+data[i].id+'\">'+data[i].label+'</span>'+
+                                       '       </div>'+               
+                                       '    </li>';           
+                            if ( i == data.length - 1  ) {
+                                \$str += '</ul>';
+                            }
+                        }
+                        \$node.parent().parent().addClass('parent');
+                        \$node.parent().parent().append( \$str );
+                        \$node.parent().parent().children('ul').children('li').show();
+                        \$node.removeClass('fa-spinner').addClass('fa-minus-square-o');
+                    } else { \$node.remove();  }                
+                },
+                datatype: 'json',
+                async: true
+            });
+        } else {
             $(this).parent().parent().children('ul').children('li').show();
             $(this).removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
         }
-        
- ";
+     } ";
+
+} else {
+    $js .= "
+            $(this).parent().parent().children('ul').children('li').show();
+            $(this).removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+        } ";
+}
 if ( $widget->multiSelect ) {
     $js .= "else if ( $(this).hasClass('fa-check-square-o') ) {
             $(this).removeClass('fa-check-square-o').addClass('fa-square-o');
@@ -179,7 +276,7 @@ if ( $widget->multiSelect ) {
 ";
 } else {
     $js .= "});    
-    $('" . $id . " .tree ul li .node:not(.root) > span').on('click', function(){
+    $('body').on('click', '" . $id . " .tree ul li .node:not(.root) > span', function(){
         $('" . $id . " > .form-group input[type=hidden]:eq(0)').val( $(this).attr('data-id') );
         $('" . $id . " .tree-input > span').html( $(this).html() );
         $(this).addClass('selected');

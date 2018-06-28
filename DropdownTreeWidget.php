@@ -18,31 +18,55 @@ class DropdownTreeWidget extends \yii\base\Widget
                        ];
 
     public $expand = false; //expand dropdown tree after show
- 
-   public $label = false; //label of dropdown
+    public $ajax = null;
+    //[
+    //  'onNodeExpand' => [
+    //                  'url' => '', URL for ajax request
+    //                  'method' => 'post', //post or get
+    //                  'params' => [
+    //                                  'param1' => 'value1',
+    //                                  'param2' => 'value1',
+    //                                  'param3' => 'value1',
+    //                                   ...
+    //                                  'paramN' => 'valueN',
+    //                                  'someparamName' => '%nodeId' // <-- %nodeId replaced to id of current node
+    //                              ]
+    //                  //returned Data will be array of array
+    //                  //[
+    //                  //  [
+    //                  //      'id' =>
+    //                  //      'label' =>
+    //                  //      'items' => [
+    //                  //                  [
+    //                  //                      'id' =>
+    //                  //                      'label' =>
+    //                  //                  ],
+    //                  //                  ... more
+    //                  //                 ]
+    //                  //  ],
+    //                  //  ... more
+    //                  //]
+    //                ],
+    //  'onNodeCollapse' => [
+    //                      ... see OnExpand, but the returned data will not be processed, only send ajax request
+    //                  ],
+    //]
+    public $label = false; //label of dropdown
 
     public $items = null; //array of tree nodes with subnodes
 
     private $html = '';
     private $treeObject = null;
 
-    private function isValidNode( $item ) {
-        return ( is_object( $item ) && isset( $item->id ) && isset( $item->label ) );
-    }
-
-    private function hasChildrens( $item ) {
-        return ( isset( $item->items ) && is_array( $item->items ) && count( $item->items ) > 0 );
-    }
-
     private function buildTreeObject( $items, &$parentItem = null ) {
-        if ( is_array( $items ) && count( $items ) > 0 ) {
+        if ( is_array( $items ) ) {
             foreach ($items as $item) {
                 if ( is_array( $item ) && isset( $item['id'] ) && isset( $item['label'] ) ) {
                     $node = new \stdClass();
                     $node->parent = $parentItem;
                     $node->id = $item['id'];
                     $node->label = $item['label'];
-                    if ( isset( $item['items'] ) && is_array( $item['items'] ) && count( $item['items'] ) > 0 ) {
+                    if ( isset( $item['items'] ) && is_array( $item['items'] ) && ( count( $item['items'] ) > 0 || $this->ajax !== null ) ) {
                         $node->items = [];
                         $this->buildTreeObject( $item['items'], $node );
                     }
@@ -55,20 +79,20 @@ class DropdownTreeWidget extends \yii\base\Widget
     public function buildTreeView( $items ) {
         if ( is_array( $items ) && count( $items ) > 0 ) {
             foreach( $items as $index => $item ) {
-                if ( $this->isValidNode( $item ) ) {
+                if (is_object( $item ) && isset( $item->id ) && isset( $item->label ) ) {
                     if ( $index == 0 ) {
                         //Если parent у item последний Node у своего parent добавляем класс last-node
                         $class =  ( isset( $item->parent ) && $item->parent !== null && isset( $item->parent->parent ) && $item->parent->parent !== null && $item->parent->parent->items[ count( $item->parent->parent->items ) - 1] == $item->parent ?  " class=\"last-node\"" : "" );
                         $this->html .= "<ul".$class.">\n";
                     }
 
-                    $this->html .= "<li".( $this->hasChildrens( $item ) ? " class=\"parent\"" : "" ).">\n";
+                    $this->html .= "<li".( isset( $item->items ) && is_array( $item->items ) ? " class=\"parent\"" : "" ).">\n";
                     $this->html .= "    <div class=\"node\">\n";
-                    $this->html .= "        ".( $this->hasChildrens( $item ) ? "<i class=\"fa fa-plus-square-o\"></i>\n" : "" );
+                    $this->html .= "        ".( isset( $item->items ) && is_array( $item->items ) && ( count( $item->items ) > 0 || $this->ajax !== null ) ? "<i class=\"fa fa-plus-square-o\"></i>\n" : "" );
                     $this->html .= "        ".( $this->multiSelect ? "<i class=\"fa fa-square-o\"></i>" : "" );
                     $this->html .= "        <span".( ( isset( $item->id ) ? " data-id='".$item->id."'" : "" ) ).">".( isset( $item->label ) ? $item->label : "&nbsp;" )."</span>\n";
                     $this->html .= "    </div>\n";
-                    if ( $this->hasChildrens( $item ) ) {
+                    if ( isset( $item->items ) && is_array( $item->items ) && ( count( $item->items ) > 0 || $this->ajax !== null )  ) {
                         $this->buildTreeView( $item->items );
                     }
                     $this->html .= "</li>\n";
