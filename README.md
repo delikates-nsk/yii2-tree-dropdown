@@ -21,6 +21,52 @@ Russian:
 ![Screenshot](dropdown-example-screen1-ru.png) 
 ![Screenshot](dropdown-example-screen2-ru.png)
 
+## Installation / Установка
+
+English:
+
+The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
+
+Either run
+
+```
+$ php composer.phar require delikates-nsk/yii2-shadowed-tabs "@dev"
+```
+
+or add
+
+```
+"delikates-nsk/yii2-shadowed-tabs": "@dev"
+```
+
+to the ```require``` section of your `composer.json` file and run
+
+```
+$ php composer.phar update
+```
+
+Russian:
+
+Быстрее всего установить расширение можно с помощью [composer](http://getcomposer.org/download/).
+
+Выполните следующую команду
+
+```
+$ php composer.phar require delikates-nsk/yii2-tree-dropdown "@dev"
+```
+
+или добавьте строчку
+
+```
+"delikates-nsk/yii2-yii2-tree-dropdown": "@dev"
+```
+
+в раздел ```require``` в файле `composer.json` вашего проекта и выполните следующую команду
+
+```
+$ php composer.phar update
+```
+
 ## Usage / Использование
 
 English:
