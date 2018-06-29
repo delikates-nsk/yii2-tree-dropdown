@@ -139,9 +139,9 @@ $(document).ready(function() {
         if ( $(this).hasClass('fa-minus-square-o') ) {";
 //Collapse Node Event Ajax Request
 if ( $widget->ajax !== null && is_array( $widget->ajax ) && isset( $widget->ajax['onNodeCollapse'] ) && is_array( $widget->ajax['onNodeCollapse'] ) && isset( $widget->ajax['onNodeCollapse']['url'] ) && trim( $widget->ajax['onNodeCollapse']['url'] ) != '' ) {
+    $ajaxData = '';
+    $nodeIdParamName = 'id';
     if ( isset( $widget->ajax['onNodeCollapse']['params'] ) && is_array(  $widget->ajax['onNodeCollapse']['params'] ) && count(  $widget->ajax['onNodeCollapse']['params'] ) > 0 ) {
-        $ajaxData = '';
-        $nodeIdParamName = 'id';
         foreach( $widget->ajax['onNodeCollapse']['params'] as $key => $value ) {
             if ( $value !== '%nodeId' ) {
                 $ajaxData .= ( $ajaxData != '' ? '&' : '' ).$key.'='.$value;
