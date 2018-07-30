@@ -279,6 +279,7 @@ if ( $widget->multiSelect ) {
     $('body').on('click', '" . $id . " .tree ul li .node:not(.root) > span', function(){
         $('" . $id . " > .form-group input[type=hidden]:eq(0)').val( $(this).attr('data-id') );
         $('" . $id . " .tree-input > span').html( $(this).html() );
+        $('" . $id . " .tree ul li .node:not(.root) > span').removeClass('selected');
         $(this).addClass('selected');
         $('" . $id . " .tree-input .icon .input-clear').removeClass('hide');
         $('" . $id . " .tree-input').click();
